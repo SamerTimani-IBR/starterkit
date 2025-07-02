@@ -5,14 +5,15 @@ export const navItems: NavItem[] = [
     navCap: 'Home',
   },
   {
-    displayName: 'products',
-    iconName: 'box',
-    route: 'starter/products',
-  },
-  {
     displayName: 'catagory',
     iconName: 'category',
     route: 'starter/catagory',
+  },
+  {
+    displayName: 'products',
+    iconName: 'box',
+    route: 'starter/products',
   }
- 
+
+
 ];
