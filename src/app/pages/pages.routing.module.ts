@@ -4,13 +4,13 @@ import { ProductsComponent } from './products/products.component';
 import { CatagoryComponent } from './catagory/catagory.component';
 
 export const PagesRoutes: Routes = [
-  {
-    path: '',
-    component: StarterComponent,
-    data: {
-      title: 'Starter Page',
-    },
-  },
+  // {
+  //   path: '',
+  //   component: StarterComponent,
+  //   data: {
+  //     title: 'Starter Page',
+  //   },
+  // },
   {
     path: 'products',
     component: ProductsComponent,
