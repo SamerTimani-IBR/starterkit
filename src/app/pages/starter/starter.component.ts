@@ -1,5 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import { MaterialModule } from 'src/app/material.module';
+import { MaterialModule } from '../../material.module';
 
 @Component({
   selector: 'app-starter',

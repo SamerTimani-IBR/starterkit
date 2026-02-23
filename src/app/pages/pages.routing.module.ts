@@ -1,28 +1,16 @@
 import { Routes } from '@angular/router';
 import { StarterComponent } from './starter/starter.component';
-import { ProductsComponent } from './products/products.component';
-import { CatagoryComponent } from './catagory/catagory.component';
+
 
 export const PagesRoutes: Routes = [
-  // {
-  //   path: '',
-  //   component: StarterComponent,
-  //   data: {
-  //     title: 'Starter Page',
-  //   },
-  // },
+  // Dashboard example
   {
-    path: 'products',
-    component: ProductsComponent,
+    path: 'home',
+    component: StarterComponent,
     data: {
-      title: 'Products Page',
+      title: 'Starter Page',
     },
   },
-  {
-    path: 'catagory',
-    component: CatagoryComponent,
-    data: {
-      title: 'Catagory Page',
-    },
-  },
+
+
 ];
