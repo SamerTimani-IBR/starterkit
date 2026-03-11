@@ -1,0 +1,135 @@
+<div class="page">
+
+  <!-- Add Category Card -->
+  <mat-card class="add-card">
+    <div class="add-head">
+      <div>
+        <h3 class="add-title">Add Category</h3>
+        <p class="add-sub">Create a new category and set its initial status.</p>
+      </div>
+
+      <div class="add-actions">
+        <button
+          type="button"
+          mat-raised-button
+          color="primary"
+          (click)="saveNew()"
+          [disabled]="isCreating">
+          <mat-icon class="mr-6">add</mat-icon>
+          Add Category
+        </button>
+
+        <button
+          type="button"
+          mat-stroked-button
+          color="primary"
+          (click)="resetNewCatagory()"
+          [disabled]="isCreating">
+          Reset
+        </button>
+
+        <mat-progress-spinner
+          *ngIf="isCreating"
+          diameter="22"
+          mode="indeterminate">
+        </mat-progress-spinner>
+      </div>
+    </div>
+
+    <div class="add-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="newCatagory.name" maxlength="80" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <input matInput [(ngModel)]="newCatagory.catagoryType" maxlength="50" placeholder="e.g. Food, Household" />
+      </mat-form-field>
+
+      <div class="inline-toggle">
+        <mat-slide-toggle
+          type="button"
+          [checked]="newCatagory.isActive"
+          (change)="newCatagory.isActive = $event.checked"
+          [disabled]="isCreating">
+          Active
+        </mat-slide-toggle>
+      </div>
+    </div>
+  </mat-card>
+
+
+  <!-- EXISTING HEADER -->
+  <div class="header">
+    <h2>Categories</h2>
+
+    <div class="actions">
+      <mat-slide-toggle
+        type="button"
+        [checked]="showActiveOnly"
+        (change)="toggleActiveOnly()">
+        Active Only
+      </mat-slide-toggle>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="isLoading" class="state">
+    <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+    <p>Loading categories...</p>
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="!isLoading && errorMessage" class="state error">
+    <mat-icon>error</mat-icon>
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- EMPTY -->
+  <div *ngIf="isEmpty" class="state">
+    <mat-icon>info</mat-icon>
+    <p>No categories found.</p>
+  </div>
+
+  <!-- TABLE -->
+  <div *ngIf="!isLoading && !errorMessage && !isEmpty" class="table-wrap mat-elevation-z2">
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>
+        <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+        <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="catagoryType">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+        <td mat-cell *matCellDef="let row">{{ row.catagoryType }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let row">
+          <mat-slide-toggle
+            type="button"
+            [disabled]="isLoading"
+            [checked]="row.isActive"
+            (change)="StatusChange(row, $event)"
+            color="primary">
+            {{ row.isActive ? 'Active' : 'Inactive' }}
+          </mat-slide-toggle>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+
+  </div>
+
+</div>

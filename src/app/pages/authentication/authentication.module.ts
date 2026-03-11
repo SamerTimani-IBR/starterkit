@@ -17,8 +17,12 @@ import { AuthenticationRoutes } from './authentication.routing';
 import { AppErrorComponent } from './error/error.component';
 import { AppSideLoginComponent } from './side-login/side-login.component';
 import { AppSideRegisterComponent } from './side-register/side-register.component';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @NgModule({
+  declarations: [
+    
+  ],
   imports: [
     CommonModule,
     RouterModule.forChild(AuthenticationRoutes),

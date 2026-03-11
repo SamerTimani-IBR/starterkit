@@ -9,6 +9,16 @@ export const navItems: NavItem[] = [
     displayName: 'home',
     iconName: 'home',
     route: 'starter/home',
+  },
+  {
+    displayName: 'categories',
+    iconName: 'home',
+    route: 'starter/categories',
+  },
+  {
+    displayName: 'products',
+    iconName: 'home',
+    route: 'starter/products',
   }
 
 

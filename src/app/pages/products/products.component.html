@@ -1,0 +1,236 @@
+<div class="page">
+
+  <!-- Add Product Card -->
+  <mat-card class="add-card">
+    <div class="add-head">
+      <div>
+        <h3 class="add-title">Add Product</h3>
+        <p class="add-sub">Create a new product and link it to a category.</p>
+      </div>
+
+  
+
+      <div class="add-actions">
+        <button type="button" mat-raised-button color="primary" (click)="saveNew()" [disabled]="isCreating">
+          <mat-icon class="mr-6">add</mat-icon>
+          Add Product
+        </button>
+    <button type="button" mat-stroked-button color="primary" (click)="resetNewProduct()" [disabled]="isCreating">
+        Reset
+      </button>
+        <mat-progress-spinner *ngIf="isCreating" diameter="22" mode="indeterminate">
+        </mat-progress-spinner>
+      </div>
+    </div>
+
+    <div class="add-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select [(ngModel)]="newProduct.catagoryId">
+          <mat-option *ngFor="let c of catagories" [value]="c.id">
+            {{ c.name }} ({{ c.catagoryType }})
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="newProduct.Name" maxlength="80" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Price</mat-label>
+        <input matInput type="number" [(ngModel)]="newProduct.Price" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Expiry Date</mat-label>
+        <input matInput type="date" [(ngModel)]="newProduct.ExpiryDate" />
+      </mat-form-field>
+
+
+    </div>
+  </mat-card>
+
+  <!-- Header + Filters -->
+  <div class="header">
+    <h2>Products</h2>
+
+    <div class="filters">
+      <mat-form-field appearance="outline" class="w-240">
+        <mat-label>Category</mat-label>
+        <mat-select [value]="selectedCatagoryId" (selectionChange)="onCategoryChange($event.value)">
+          <mat-option value="all">All</mat-option>
+          <mat-option *ngFor="let c of catagories" [value]="c.id">
+            {{ c.name }} ({{ c.catagoryType }})
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-280">
+        <mat-label>Search by name</mat-label>
+        <input matInput [value]="searchText" (input)="onSearchChange($any($event.target).value)"
+          placeholder="e.g. Milk" />
+
+        <button type="button" mat-icon-button matSuffix *ngIf="searchText" (click)="onSearchChange('')">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <button type="button" mat-stroked-button color="primary" (click)="loadAll()" [disabled]="isLoading">
+        Reload
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="isLoading" class="state">
+    <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+    <p>Loading products...</p>
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="!isLoading && errorMessage" class="state error">
+    <mat-icon>error</mat-icon>
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- EMPTY -->
+  <div *ngIf="isEmpty" class="state">
+    <mat-icon>info</mat-icon>
+    <p>No products match the current filters.</p>
+  </div>
+
+  <!-- TABLE -->
+  <div *ngIf="!isLoading && !errorMessage && !isEmpty" class="table-wrap mat-elevation-z2">
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>
+        <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+        <td mat-cell *matCellDef="let row">
+
+          <ng-container *ngIf="editingId === (row.id + ''); else viewName">
+            <mat-form-field appearance="outline" class="cell-field w-220">
+              <input matInput [(ngModel)]="editModel.Name" />
+            </mat-form-field>
+          </ng-container>
+
+          <ng-template #viewName>
+            {{ row.Name }}
+          </ng-template>
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Price">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+        <td mat-cell *matCellDef="let row">
+
+          <ng-container *ngIf="editingId === (row.id + ''); else viewPrice">
+            <mat-form-field appearance="outline" class="cell-field w-140">
+              <input matInput type="number" [(ngModel)]="editModel.Price" />
+            </mat-form-field>
+          </ng-container>
+
+          <ng-template #viewPrice>
+            {{ row.Price | number:'1.2-2' }}
+          </ng-template>
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="ExpiryDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Expiry</th>
+        <td mat-cell *matCellDef="let row">
+
+          <ng-container *ngIf="editingId === (row.id + ''); else viewExpiry">
+            <mat-form-field appearance="outline" class="cell-field w-200">
+              <input matInput type="date" [(ngModel)]="editModel.ExpiryDate" />
+            </mat-form-field>
+          </ng-container>
+
+          <ng-template #viewExpiry>
+            {{ row.ExpiryDate | date:'yyyy-MM-dd' }}
+          </ng-template>
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="catagoryName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+        <td mat-cell *matCellDef="let row">
+
+          <ng-container *ngIf="editingId === (row.id + ''); else viewCat">
+            <mat-form-field appearance="outline" class="cell-field w-220">
+              <mat-select [(ngModel)]="editModel.catagoryId">
+                <mat-option *ngFor="let c of catagories" [value]="c.id">
+                  {{ c.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </ng-container>
+
+          <ng-template #viewCat>
+            {{ row.catagoryName }}
+          </ng-template>
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="catagoryType">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+        <td mat-cell *matCellDef="let row">{{ row.catagoryType }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="expiryStatus">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="chip" [class.expired]="row.expiryStatus==='Expired'"
+            [class.near]="row.expiryStatus==='Near Expiry'" [class.valid]="row.expiryStatus==='Valid'">
+            {{ row.expiryStatus }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row">
+
+          <!-- View mode -->
+          <ng-container *ngIf="editingId !== (row.id + ''); else editActions">
+            <button type="button" mat-icon-button color="primary" (click)="startEdit(row)" matTooltip="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button type="button" mat-icon-button color="warn" (click)="delete(row)" matTooltip="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </ng-container>
+
+          <!-- Edit mode -->
+          <ng-template #editActions>
+            <button type="button" mat-icon-button color="primary" (click)="saveEdit()" matTooltip="Save (PUT)">
+              <mat-icon>save</mat-icon>
+            </button>
+
+            <button type="button" mat-icon-button (click)="cancelEdit()" matTooltip="Cancel">
+              <mat-icon>close</mat-icon>
+            </button>
+          </ng-template>
+
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
+  </div>
+
+</div>
